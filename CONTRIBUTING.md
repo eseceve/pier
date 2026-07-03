@@ -41,10 +41,7 @@ Conventional Commits:
 1. On `develop` (channel `beta`) and `main` (stable), Jenkins computes the next
    version with [`svu`](https://github.com/caarlos0/svu) and creates + pushes the
    git tag.
-2. [GoReleaser](https://goreleaser.com/) cross-compiles the binaries, publishes
-   the GitHub Release (with notes from the commit history), and updates the
-   Homebrew tap (skipped on `develop` prereleases).
+2. [GoReleaser](https://goreleaser.com/) cross-compiles the binaries and
+   publishes the GitHub Release (with notes from the commit history).
 
-Maintainers only: publishing to the Homebrew tap requires a
-`HOMEBREW_TAP_GITHUB_TOKEN` credential in Jenkins with write access to
-`comparaonline/homebrew-tap`.
+Homebrew tap automation is planned for a later version.

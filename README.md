@@ -7,9 +7,9 @@ Kubernetes coordinates (context + namespace) via a config file, so day-to-day
 operations become short and memorable — **targeting staging by default**.
 
 ```console
-$ pier restart ai-interactor        # rollout restart on staging
-$ pier logs ai-interactor -f        # follow logs on staging
-$ pier restart ai-interactor -e prod   # prompts for confirmation
+$ pier restart api        # rollout restart on staging
+$ pier logs api -f        # follow logs on staging
+$ pier restart api -e prod   # prompts for confirmation
 ```
 
 The name follows the nautical theme of Kubernetes (Greek *kubernetes* =
@@ -18,12 +18,6 @@ how each service is "docked" at a known context/namespace.
 
 ## Install
 
-Homebrew:
-
-```console
-brew install comparaonline/tap/pier
-```
-
 Go:
 
 ```console
@@ -31,6 +25,8 @@ go install github.com/comparaonline/pier@latest
 ```
 
 Or download a binary from the [releases page](https://github.com/comparaonline/pier/releases).
+
+> A Homebrew tap is planned for a later version.
 
 ## Configuration
 
@@ -49,14 +45,14 @@ environments:
     protected: true            # confirmation required for mutating ops
 
 services:
-  ai-interactor:
+  api:
     namespace: default
-  conversations:
+  web:
     namespace: default
-    deployment: conversations-api      # override when the deployment differs
+    deployment: web-server      # override when the deployment differs
     overrides:
       prod:
-        namespace: conversations-prod
+        namespace: web-prod
 ```
 
 ## Commands
@@ -82,7 +78,7 @@ Requires Go 1.26+ and `kubectl` on your `PATH`.
 make build      # build ./bin/pier
 make test       # go test -race
 make lint       # golangci-lint
-make install-tools   # golangci-lint, goreleaser, lefthook
+make install-tools   # golangci-lint, goreleaser, lefthook, svu, commitlint
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and release process.

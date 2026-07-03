@@ -38,18 +38,4 @@ changelog:
       - "^test:"
       - "^ci:"
 
-brews:
-  - name: pier
-    # Skip the tap update on prereleases (e.g. develop's beta builds).
-    skip_upload: auto
-    repository:
-      owner: comparaonline
-      name: homebrew-tap
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-    homepage: "https://github.com/comparaonline/pier"
-    description: "kubectl wrapper that maps service names to their k8s context/namespace"
-    license: MIT
-    install: |
-      bin.install "pier"
-    test: |
-      system "#{bin}/pier", "--version"
+# Homebrew tap automation is deferred to a later version.

@@ -11,10 +11,10 @@ resource names) via a config file, so day-to-day operations become short and
 memorable. For example:
 
 ```
-pier restart ai-interactor
+pier restart api
 ```
 
-resolves `ai-interactor` to its `(context, namespace, deployment)` and runs the
+resolves `api` to its `(context, namespace, deployment)` and runs the
 equivalent `kubectl rollout restart` against **staging by default**.
 
 The name comes from the nautical theme of Kubernetes (Greek *kubernetes* =
@@ -27,7 +27,7 @@ how each service is "docked" at a known context/namespace.
   commands.
 - Default to a safe environment (staging); reach other environments explicitly.
 - Guard mutating operations against protected environments (e.g. production).
-- Be a single static binary, easy to distribute (OSS, own Homebrew tap later).
+- Be a single static binary, easy to distribute (OSS).
 
 ## Non-goals (v1)
 
@@ -69,21 +69,21 @@ defaultEnv: staging
 
 environments:
   staging:
-    context: secontreras@k8s-staging.us-east-1.eksctl.io
+    context: staging-cluster
   prod:
-    context: scontreras@co-applications.us-east-1.eksctl.io
+    context: prod-cluster
     protected: true            # triggers confirmation on mutating ops
 
 services:
-  ai-interactor:
+  api:
     namespace: default
     # deployment / configmap / secret are optional; default = service name
-  conversations:
+  web:
     namespace: default
-    deployment: conversations-api      # override when the deployment differs
-    overrides:                         # only when something changes per env
+    deployment: web-server      # override when the deployment differs
+    overrides:                  # only when something changes per env
       prod:
-        namespace: conversations-prod
+        namespace: web-prod
 ```
 
 ### Resolution rules
@@ -137,8 +137,8 @@ Every resolved command is invoked with `--context <ctx> --namespace <ns>`.
 
     ```
     ⚠  PROD — context: prod-cluster, namespace: default
-       This will: kubectl rollout restart deployment/ai-interactor
-       Type the service name to confirm (ai-interactor):
+       This will: kubectl rollout restart deployment/api
+       Type the service name to confirm (api):
     ```
   - `-y/--yes` skips the prompt.
 - **Read** operations (`logs`, `status`, `*get`, `services`) never prompt.
@@ -221,9 +221,8 @@ CI/CD runs on the company's **Jenkins** (a `Jenkinsfile` at the repo root),
 following the Comparaonline convention (reference: `ai-funnel-webapp`) but
 **fully Node-free** — the whole toolchain is Go. Branch model:
 
-- `develop` → prerelease channel `beta` (GitHub prereleases; not published to the
-  Homebrew tap).
-- `main` → stable release (`latest`; published to the tap).
+- `develop` → prerelease channel `beta` (GitHub prereleases).
+- `main` → stable release (`latest`).
 
 Stages, adapted for a CLI — there is **no Helm/k8s deploy** (this repo ships
 binaries, not a deployed container). Everything runs in a single `golang:1.26`
@@ -235,16 +234,16 @@ container (plus `git`):
    [`svu`](https://github.com/caarlos0/svu) from Conventional Commits; if it
    differs from the current tag, create + push the tag.
 3. **Publish binaries**: [GoReleaser](https://goreleaser.com/) cross-compiles
-   (linux/darwin × amd64/arm64), creates the GitHub Release with notes + binaries,
-   and updates the Homebrew tap (skipped on prereleases via `skip_upload: auto`).
+   (linux/darwin × amd64/arm64) and creates the GitHub Release with notes +
+   binaries.
 
 Backmerge `main` → `develop` is a plain `git` step in the pipeline (no plugin).
+Homebrew tap automation is deferred to a later version.
 
 > The `Jenkinsfile` is authored in the implementation phase and verified against
 > the real Jenkins setup. Infra requirements to confirm: an agent with Go +
 > GoReleaser + svu + git; the `GitHubJenkinsAccessToken` credential (exported as
-> `GITHUB_TOKEN` for GoReleaser); a `HOMEBREW_TAP_GITHUB_TOKEN` secret with write
-> access to `comparaonline/homebrew-tap`.
+> `GITHUB_TOKEN` for GoReleaser).
 
 ### Versioning & releases (svu + GoReleaser, Node-free)
 
@@ -255,7 +254,7 @@ is injected into the binary via `-ldflags` at build time.
   Conventional Commits in `git log`; the pipeline tags and pushes it. `develop`
   uses svu's prerelease mode for `beta` tags.
 - **GoReleaser** owns the GitHub Release (notes generated from the conventional
-  commit history), the cross-compiled binaries, and the Homebrew tap update.
+  commit history) and the cross-compiled binaries.
 
 There is no committed `CHANGELOG.md` in v1 — the GitHub Release notes are the
 changelog. (A committed changelog can be added later with a Go tool such as
@@ -273,10 +272,9 @@ format.
 ### Distribution
 
 - Public GitHub repo `github.com/comparaonline/pier`.
-- `brew install comparaonline/tap/pier` (tap repo `comparaonline/homebrew-tap`,
-  updated by GoReleaser).
 - `go install github.com/comparaonline/pier@latest`.
 - Prebuilt binaries on the GitHub Releases page.
+- Homebrew tap: **deferred to a later version**.
 
 ### Dependency updates & hygiene
 
