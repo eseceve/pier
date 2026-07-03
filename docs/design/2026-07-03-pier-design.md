@@ -181,8 +181,7 @@ pier/
 
 ## Repository, DX & CI/CD
 
-Module path: `github.com/eseceve/pier` (placeholder owner until the remote is
-created). Go 1.26. License: MIT.
+Module path: `github.com/comparaonline/pier`. Go 1.26. License: MIT.
 
 ### App skeleton generation
 
@@ -213,37 +212,75 @@ and `internal/kube` packages are hand-written.
   `gosec`, `revive`, `misspell`, `unconvert`; `gofmt`/`goimports` as formatters.
 - **Makefile**: `build`, `test`, `lint`, `fmt`, `tidy`, `run`, `clean`,
   `install-tools`.
-- **lefthook** (`lefthook.yml`): pre-commit runs `gofmt` + `golangci-lint`;
-  pre-push runs the test suite.
+- **lefthook** (`lefthook.yml`): `commit-msg` runs **commitlint**; `pre-commit`
+  runs `gofmt` + `golangci-lint`; `pre-push` runs the test suite.
 
-### CI (GitHub Actions — `ci.yml`)
+### CI/CD (Jenkins)
 
-On every push to `main` and every PR: `lint` (golangci-lint-action v9,
-golangci-lint v2.12), `test` (matrix ubuntu + macos, `go test -race -cover`),
-`build`.
+CI/CD runs on the company's **Jenkins** (a `Jenkinsfile` at the repo root),
+following the Comparaonline convention (reference: `ai-funnel-webapp`) but
+**fully Node-free** — the whole toolchain is Go. Branch model:
 
-### CD (GitHub Actions — `release.yml`)
+- `develop` → prerelease channel `beta` (GitHub prereleases; not published to the
+  Homebrew tap).
+- `main` → stable release (`latest`; published to the tap).
 
-- **[release-please](https://github.com/googleapis/release-please)** (action v4)
-  maintains a release PR from Conventional Commits (version + `CHANGELOG.md`).
-  Merging it tags the release.
-- **[GoReleaser](https://goreleaser.com/)** (action v6, config v2) then
-  cross-compiles (linux/darwin × amd64/arm64), publishes the GitHub Release,
-  updates the Homebrew tap, and enables `go install`.
-- Requires a `HOMEBREW_TAP_GITHUB_TOKEN` secret with write access to
-  `eseceve/homebrew-tap` (repo to be created).
+Stages, adapted for a CLI — there is **no Helm/k8s deploy** (this repo ships
+binaries, not a deployed container). Everything runs in a single `golang:1.26`
+container (plus `git`):
 
-### Maintenance
+1. **Test** (non-release commits): `golangci-lint run`, `go test ./... -race`,
+   `go build ./...`.
+2. **Release** (`develop`/`main`): compute the next version with
+   [`svu`](https://github.com/caarlos0/svu) from Conventional Commits; if it
+   differs from the current tag, create + push the tag.
+3. **Publish binaries**: [GoReleaser](https://goreleaser.com/) cross-compiles
+   (linux/darwin × amd64/arm64), creates the GitHub Release with notes + binaries,
+   and updates the Homebrew tap (skipped on prereleases via `skip_upload: auto`).
 
-- **Dependabot** (`dependabot.yml`): weekly updates for `gomod` and
-  `github-actions`.
+Backmerge `main` → `develop` is a plain `git` step in the pipeline (no plugin).
 
-### Config value hygiene
+> The `Jenkinsfile` is authored in the implementation phase and verified against
+> the real Jenkins setup. Infra requirements to confirm: an agent with Go +
+> GoReleaser + svu + git; the `GitHubJenkinsAccessToken` credential (exported as
+> `GITHUB_TOKEN` for GoReleaser); a `HOMEBREW_TAP_GITHUB_TOKEN` secret with write
+> access to `comparaonline/homebrew-tap`.
 
-The committed `config.example.yaml` and README use generic placeholders
-(`staging-cluster`, `prod-cluster`) — never real internal EKS context names.
+### Versioning & releases (svu + GoReleaser, Node-free)
 
-## Distribution (later)
+The version lives **only in the git tag** (no `package.json`, no anchor file) and
+is injected into the binary via `-ldflags` at build time.
 
-- Public GitHub repo (own namespace, decoupled from any employer).
-- Homebrew tap repo `eseceve/homebrew-tap` + `goreleaser` for static binaries.
+- **[`svu`](https://github.com/caarlos0/svu) `next`** derives the next semver from
+  Conventional Commits in `git log`; the pipeline tags and pushes it. `develop`
+  uses svu's prerelease mode for `beta` tags.
+- **GoReleaser** owns the GitHub Release (notes generated from the conventional
+  commit history), the cross-compiled binaries, and the Homebrew tap update.
+
+There is no committed `CHANGELOG.md` in v1 — the GitHub Release notes are the
+changelog. (A committed changelog can be added later with a Go tool such as
+`git-chglog`.)
+
+### Commit conventions
+
+Conventional Commits are required (they drive the svu version bump), enforced
+locally by lefthook's `commit-msg` hook running
+[`commitlint`](https://github.com/conventionalcommit/commitlint) (Go:
+`commitlint lint --message=<file>`). An optional `.commitlint.yaml` can be
+generated with `commitlint config create`; the defaults enforce the conventional
+format.
+
+### Distribution
+
+- Public GitHub repo `github.com/comparaonline/pier`.
+- `brew install comparaonline/tap/pier` (tap repo `comparaonline/homebrew-tap`,
+  updated by GoReleaser).
+- `go install github.com/comparaonline/pier@latest`.
+- Prebuilt binaries on the GitHub Releases page.
+
+### Dependency updates & hygiene
+
+- **Dependabot** (`dependabot.yml`): weekly `gomod` updates (an addition beyond
+  the company convention; CI itself is Jenkins, not GitHub Actions).
+- The committed `config.example.yaml` and README use generic placeholders
+  (`staging-cluster`, `prod-cluster`) — never real internal EKS context names.

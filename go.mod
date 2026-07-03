@@ -1,3 +1,3 @@
-module github.com/eseceve/pier
+module github.com/comparaonline/pier
 
 go 1.26

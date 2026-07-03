@@ -1,6 +1,5 @@
 # pier
 
-[![ci](https://github.com/eseceve/pier/actions/workflows/ci.yml/badge.svg)](https://github.com/eseceve/pier/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 `pier` is a small `kubectl` wrapper. It maps a friendly service name to its
@@ -22,16 +21,16 @@ how each service is "docked" at a known context/namespace.
 Homebrew:
 
 ```console
-brew install eseceve/tap/pier
+brew install comparaonline/tap/pier
 ```
 
 Go:
 
 ```console
-go install github.com/eseceve/pier@latest
+go install github.com/comparaonline/pier@latest
 ```
 
-Or download a binary from the [releases page](https://github.com/eseceve/pier/releases).
+Or download a binary from the [releases page](https://github.com/comparaonline/pier/releases).
 
 ## Configuration
 

@@ -7,7 +7,8 @@ Thanks for your interest in improving `pier`.
 - Go 1.26+
 - `kubectl` on your `PATH` (runtime dependency of `pier`)
 - Optional dev tools: `make install-tools` installs `golangci-lint`,
-  `goreleaser`, and `lefthook`.
+  `goreleaser`, `lefthook`, `svu`, and `commitlint` (all Go binaries — no Node
+  required).
 
 ## Local workflow
 
@@ -18,8 +19,9 @@ make lint    # golangci-lint run
 make fmt     # gofmt -w .
 ```
 
-Install the git hooks once with `lefthook install`. They run `gofmt` and
-`golangci-lint` before each commit and the test suite before each push.
+Install the git hooks once with `lefthook install`. They run `commitlint` on the
+commit message, `gofmt` + `golangci-lint` before each commit, and the test suite
+before each push.
 
 ## Commit messages
 
@@ -33,15 +35,16 @@ The commit type drives automated versioning:
 
 ## Releases
 
-Releases are automated:
+CI/CD runs on Jenkins and is fully Node-free. Releases are automated from
+Conventional Commits:
 
-1. Merging Conventional Commits to `main` makes
-   [release-please](https://github.com/googleapis/release-please) open (or
-   update) a release PR that maintains the version and `CHANGELOG.md`.
-2. Merging that PR tags the release, which triggers
-   [GoReleaser](https://goreleaser.com/) to build cross-platform binaries,
-   publish the GitHub Release, and update the Homebrew tap.
+1. On `develop` (channel `beta`) and `main` (stable), Jenkins computes the next
+   version with [`svu`](https://github.com/caarlos0/svu) and creates + pushes the
+   git tag.
+2. [GoReleaser](https://goreleaser.com/) cross-compiles the binaries, publishes
+   the GitHub Release (with notes from the commit history), and updates the
+   Homebrew tap (skipped on `develop` prereleases).
 
-Maintainers only: releasing to the Homebrew tap requires a
-`HOMEBREW_TAP_GITHUB_TOKEN` repository secret with write access to the
-`eseceve/homebrew-tap` repository.
+Maintainers only: publishing to the Homebrew tap requires a
+`HOMEBREW_TAP_GITHUB_TOKEN` credential in Jenkins with write access to
+`comparaonline/homebrew-tap`.

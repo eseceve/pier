@@ -30,17 +30,23 @@ archives:
 checksum:
   name_template: checksums.txt
 
-# release-please owns the changelog.
 changelog:
-  disable: true
+  filters:
+    exclude:
+      - "^chore\\(release\\):"
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
 
 brews:
   - name: pier
+    # Skip the tap update on prereleases (e.g. develop's beta builds).
+    skip_upload: auto
     repository:
-      owner: eseceve
+      owner: comparaonline
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-    homepage: "https://github.com/eseceve/pier"
+    homepage: "https://github.com/comparaonline/pier"
     description: "kubectl wrapper that maps service names to their k8s context/namespace"
     license: MIT
     install: |

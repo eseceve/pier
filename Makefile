@@ -27,3 +27,5 @@ install-tools:
 	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 	go install github.com/goreleaser/goreleaser/v2@latest
 	go install github.com/evilmartians/lefthook@latest
+	go install github.com/caarlos0/svu/v3@latest
+	go install github.com/conventionalcommit/commitlint@latest
