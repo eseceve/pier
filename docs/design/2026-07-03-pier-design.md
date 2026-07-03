@@ -128,8 +128,19 @@ Every resolved command is invoked with `--context <ctx> --namespace <ns>`.
 
 - Without `-e`, every command targets `staging`.
 - **Mutating** operations (`restart`, `config edit`, `secret edit`) against an
-  environment with `protected: true` require an interactive confirmation
-  (typing the service name). `-y/--yes` skips it.
+  environment with `protected: true` require an interactive confirmation.
+  - The **typed token is the service name** (varies per command → resists
+    autopilot and double-checks the target, catching a wrong-service mistake).
+  - The **prompt is environment-forward**: it prominently shows the environment,
+    the resolved context/namespace, and the exact `kubectl` action, so the blast
+    radius is obvious before confirming. Example:
+
+    ```
+    ⚠  PROD — context: prod-cluster, namespace: default
+       This will: kubectl rollout restart deployment/ai-interactor
+       Type the service name to confirm (ai-interactor):
+    ```
+  - `-y/--yes` skips the prompt.
 - **Read** operations (`logs`, `status`, `*get`, `services`) never prompt.
 
 ### Security note
