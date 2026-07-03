@@ -1,0 +1,49 @@
+version: 2
+
+project_name: pier
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{ .Version }}
+      - -X main.commit={{ .Commit }}
+      - -X main.date={{ .Date }}
+
+archives:
+  - formats:
+      - tar.gz
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+
+checksum:
+  name_template: checksums.txt
+
+# release-please owns the changelog.
+changelog:
+  disable: true
+
+brews:
+  - name: pier
+    repository:
+      owner: eseceve
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    homepage: "https://github.com/eseceve/pier"
+    description: "kubectl wrapper that maps service names to their k8s context/namespace"
+    license: MIT
+    install: |
+      bin.install "pier"
+    test: |
+      system "#{bin}/pier", "--version"

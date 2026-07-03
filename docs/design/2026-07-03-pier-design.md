@@ -168,8 +168,71 @@ pier/
   LICENSE
 ```
 
+## Repository, DX & CI/CD
+
+Module path: `github.com/eseceve/pier` (placeholder owner until the remote is
+created). Go 1.26. License: MIT.
+
+### App skeleton generation
+
+The cobra command tree (`main.go`, `cmd/root.go`, subcommands) is generated with
+[`cobra-cli`](https://github.com/spf13/cobra-cli) rather than hand-written:
+
+```console
+cobra-cli init
+cobra-cli add restart
+cobra-cli add status
+cobra-cli add logs
+cobra-cli add services
+cobra-cli add config
+cobra-cli add get -p configCmd     # nested: pier config get
+cobra-cli add edit -p configCmd
+cobra-cli add secret
+cobra-cli add get -p secretCmd
+cobra-cli add edit -p secretCmd
+```
+
+`cobra-cli` only scaffolds `main.go` and the `cmd/` package. The `internal/config`
+and `internal/kube` packages are hand-written.
+
+### Developer experience
+
+- **`.editorconfig`**, **`.gitignore`**.
+- **golangci-lint v2** (`.golangci.yml`): `standard` set plus `gocritic`,
+  `gosec`, `revive`, `misspell`, `unconvert`; `gofmt`/`goimports` as formatters.
+- **Makefile**: `build`, `test`, `lint`, `fmt`, `tidy`, `run`, `clean`,
+  `install-tools`.
+- **lefthook** (`lefthook.yml`): pre-commit runs `gofmt` + `golangci-lint`;
+  pre-push runs the test suite.
+
+### CI (GitHub Actions — `ci.yml`)
+
+On every push to `main` and every PR: `lint` (golangci-lint-action v9,
+golangci-lint v2.12), `test` (matrix ubuntu + macos, `go test -race -cover`),
+`build`.
+
+### CD (GitHub Actions — `release.yml`)
+
+- **[release-please](https://github.com/googleapis/release-please)** (action v4)
+  maintains a release PR from Conventional Commits (version + `CHANGELOG.md`).
+  Merging it tags the release.
+- **[GoReleaser](https://goreleaser.com/)** (action v6, config v2) then
+  cross-compiles (linux/darwin × amd64/arm64), publishes the GitHub Release,
+  updates the Homebrew tap, and enables `go install`.
+- Requires a `HOMEBREW_TAP_GITHUB_TOKEN` secret with write access to
+  `eseceve/homebrew-tap` (repo to be created).
+
+### Maintenance
+
+- **Dependabot** (`dependabot.yml`): weekly updates for `gomod` and
+  `github-actions`.
+
+### Config value hygiene
+
+The committed `config.example.yaml` and README use generic placeholders
+(`staging-cluster`, `prod-cluster`) — never real internal EKS context names.
+
 ## Distribution (later)
 
 - Public GitHub repo (own namespace, decoupled from any employer).
-- Homebrew tap + `goreleaser` for static binaries. Out of scope for the first
-  implementation plan.
+- Homebrew tap repo `eseceve/homebrew-tap` + `goreleaser` for static binaries.
