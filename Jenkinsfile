@@ -7,6 +7,9 @@
 //     releases on comparaonline/pier;
 //   * git operations inside the container may need `safe.directory` on the mounted
 //     workspace depending on uid mapping;
+//   * `jenkinsNotification()` and automatic SCM checkout rely on the org's global
+//     Jenkins shared library / job config (same as ai-funnel-webapp);
+//   * `git push` uses the agent's git credentials for the remote (not GITHUB_TOKEN);
 //   * branch model: `develop` => `beta` prerelease, `main` => stable release.
 pipeline {
   agent any
@@ -67,9 +70,11 @@ def release() {
   sh 'git config --global user.email "jenkins@comparaonline.com"'
   sh 'git config --global user.name "Jenkins"'
 
+  // svu is installed in each container invocation (containers are ephemeral, so a
+  // tool installed in one go_out call is not present in the next).
   def prerelease = env.BRANCH_NAME == 'develop' ? '--pre-release beta' : ''
   def next = go_out("go install github.com/caarlos0/svu/v3@latest && svu next ${prerelease}")
-  def current = go_out("svu current")
+  def current = go_out("go install github.com/caarlos0/svu/v3@latest && svu current")
 
   if (next == current) {
     echo "No release warranted (svu next == current: ${current})"
