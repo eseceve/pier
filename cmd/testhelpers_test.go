@@ -38,6 +38,7 @@ func withConfig(t *testing.T, yaml string) {
 	}
 	t.Setenv("PIER_CONFIG", path)
 	flagEnv, flagYes, flagDryRun, flagVerbose = "", false, false, false
+	secretDecode, logsFollow, logsTail, logsContainer = false, false, 0, ""
 	prev := runner
 	t.Cleanup(func() { runner = prev })
 }
