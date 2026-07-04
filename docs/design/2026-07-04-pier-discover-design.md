@@ -80,6 +80,7 @@ func Match(service string, candidates []string) string
 **`--json` (non-interactive data mode):** emit discovered data as JSON for
 scripting and for the skill. Shape:
 - `pier discover --json` → `{ "contexts": [...] }`
+- `pier discover --json --context X` → `{ "namespaces": [...] }`
 - `pier discover --json --context X --namespace ns` →
   `{ "deployments": [...], "configmaps": [...], "secrets": [...] }`
 
@@ -88,8 +89,8 @@ function shared by the wizard.
 
 ### 3. Repo-shipped skill
 
-A generic Claude Code skill under `skills/` in the repo (so `git clone` +
-install makes it available). It:
+A generic Claude Code skill under `.claude/skills/pier-config/` in the repo (so
+`git clone` makes it available when working in the repo). It:
 - calls `pier discover --json` for raw data,
 - converses with the user to choose contexts/env names/services,
 - applies LLM judgment for fuzzy secret/configmap matching and cross-env
