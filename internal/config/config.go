@@ -4,8 +4,12 @@ package config
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 // Environment is a named Kubernetes context, optionally protected.
@@ -97,4 +101,30 @@ func orDefault(value, fallback string) string {
 		return fallback
 	}
 	return value
+}
+
+// DefaultPath returns the config path: $PIER_CONFIG if set, else
+// $XDG_CONFIG_HOME/pier/config.yaml, else ~/.config/pier/config.yaml.
+func DefaultPath() string {
+	if p := os.Getenv("PIER_CONFIG"); p != "" {
+		return p
+	}
+	if base := os.Getenv("XDG_CONFIG_HOME"); base != "" {
+		return filepath.Join(base, "pier", "config.yaml")
+	}
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, ".config", "pier", "config.yaml")
+}
+
+// Load reads and parses the config file at path.
+func Load(path string) (*Config, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("reading config %s: %w", path, err)
+	}
+	var cfg Config
+	if err := yaml.Unmarshal(data, &cfg); err != nil {
+		return nil, fmt.Errorf("parsing config %s: %w", path, err)
+	}
+	return &cfg, nil
 }
