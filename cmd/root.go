@@ -1,3 +1,4 @@
+// Package cmd contains all pier subcommands.
 package cmd
 
 import (
@@ -5,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/comparaonline/pier/internal/confirm"
 	"github.com/comparaonline/pier/internal/config"
+	"github.com/comparaonline/pier/internal/confirm"
 	"github.com/comparaonline/pier/internal/kube"
 	"github.com/spf13/cobra"
 )
