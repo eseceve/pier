@@ -1,0 +1,27 @@
+package cmd
+
+import (
+	"github.com/comparaonline/pier/internal/kube"
+	"github.com/spf13/cobra"
+)
+
+var secretEditCmd = &cobra.Command{
+	Use:   "edit <service>",
+	Short: "Edit the service's Secret in $EDITOR",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(_ *cobra.Command, args []string) error {
+		target, err := resolve(args[0])
+		if err != nil {
+			return err
+		}
+		kubectlArgs := kube.SecretEditArgs(target)
+		if err := guard(target, "kubectl "+joinArgs(kubectlArgs)); err != nil {
+			return err
+		}
+		return run(kubectlArgs)
+	},
+}
+
+func init() {
+	secretCmd.AddCommand(secretEditCmd)
+}
