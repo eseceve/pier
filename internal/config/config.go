@@ -118,7 +118,7 @@ func DefaultPath() string {
 
 // Load reads and parses the config file at path.
 func Load(path string) (*Config, error) {
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(path) //nolint:gosec // G304: config path is user-provided by design
 	if err != nil {
 		return nil, fmt.Errorf("reading config %s: %w", path, err)
 	}
