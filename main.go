@@ -1,11 +1,29 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
-*/
 package main
 
-import "github.com/comparaonline/pier/cmd"
+import (
+	"errors"
+	"fmt"
+	"os"
+	"os/exec"
+
+	"github.com/comparaonline/pier/cmd"
+)
+
+// Injected at build time via -ldflags.
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
 
 func main() {
-	cmd.Execute()
+	cmd.SetVersion(version, commit, date)
+	if err := cmd.Execute(); err != nil {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			os.Exit(exitErr.ExitCode())
+		}
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 }
