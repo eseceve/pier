@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/comparaonline/pier/internal/discover"
 	"github.com/spf13/cobra"
@@ -21,6 +22,9 @@ var discoverCmd = &cobra.Command{
 	Short: "Discover cluster resources to help build the config",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, _ []string) error {
+		if discoverNamespace != "" && discoverContext == "" {
+			return errors.New("--namespace requires --context")
+		}
 		if !discoverJSON {
 			_, err := cmd.OutOrStdout().Write([]byte(
 				"Interactive discovery is coming in a later version.\n" +

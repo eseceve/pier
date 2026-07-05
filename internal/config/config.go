@@ -81,7 +81,7 @@ func (c *Config) Resolve(service, env string) (Target, error) {
 		return Target{}, fmt.Errorf("unknown service %q (configured: %s)", service, strings.Join(c.ServiceNames(), ", "))
 	}
 
-	override := svc.Overrides[env]
+	override := svc.Overrides[env] // zero value when the env has no override
 
 	return Target{
 		Service:    service,
