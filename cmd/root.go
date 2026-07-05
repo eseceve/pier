@@ -69,11 +69,11 @@ func resolve(service string) (config.Target, error) {
 // run honors --dry-run/--verbose, otherwise executes kubectl via the runner.
 func run(args []string) error {
 	if flagDryRun {
-		fmt.Println("kubectl " + strings.Join(args, " "))
+		fmt.Println(kubectlCmd(args))
 		return nil
 	}
 	if flagVerbose {
-		fmt.Fprintln(os.Stderr, "+ kubectl "+strings.Join(args, " "))
+		fmt.Fprintln(os.Stderr, "+ "+kubectlCmd(args))
 	}
 	return runner.Run(args)
 }
@@ -89,3 +89,6 @@ func guard(t config.Target, action string) error {
 
 // joinArgs renders kubectl args for display.
 func joinArgs(args []string) string { return strings.Join(args, " ") }
+
+// kubectlCmd renders kubectl args as a display string, e.g. "kubectl get pods".
+func kubectlCmd(args []string) string { return "kubectl " + joinArgs(args) }

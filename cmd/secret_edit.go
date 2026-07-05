@@ -15,7 +15,7 @@ var secretEditCmd = &cobra.Command{
 			return err
 		}
 		kubectlArgs := kube.SecretEditArgs(target)
-		if err := guard(target, "kubectl "+joinArgs(kubectlArgs)); err != nil {
+		if err := guard(target, kubectlCmd(kubectlArgs)); err != nil {
 			return err
 		}
 		return run(kubectlArgs)

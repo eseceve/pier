@@ -7,8 +7,9 @@ import "strings"
 // parseNames splits `kubectl ... -o name` output into bare names, stripping any
 // "kind/" prefix and blank lines.
 func parseNames(out []byte) []string {
-	var names []string
-	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
+	names := make([]string, 0, len(lines))
+	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
@@ -24,7 +25,7 @@ func parseNames(out []byte) []string {
 // filterNoise drops Kubernetes-managed names that never map to a pier service:
 // helm release secrets, service-account tokens, and cluster CA material.
 func filterNoise(names []string) []string {
-	var out []string
+	out := make([]string, 0, len(names))
 	for _, n := range names {
 		switch {
 		case strings.HasPrefix(n, "sh.helm.release."):
