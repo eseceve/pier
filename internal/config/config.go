@@ -21,6 +21,8 @@ type Environment struct {
 // ServiceOverride overrides a service's fields for a specific environment.
 type ServiceOverride struct {
 	Namespace string `yaml:"namespace"`
+	ConfigMap string `yaml:"configmap"`
+	Secret    string `yaml:"secret"`
 }
 
 // Service maps a friendly name to its Kubernetes resources. Deployment,
@@ -79,19 +81,16 @@ func (c *Config) Resolve(service, env string) (Target, error) {
 		return Target{}, fmt.Errorf("unknown service %q (configured: %s)", service, strings.Join(c.ServiceNames(), ", "))
 	}
 
-	namespace := svc.Namespace
-	if o, ok := svc.Overrides[env]; ok && o.Namespace != "" {
-		namespace = o.Namespace
-	}
+	override := svc.Overrides[env]
 
 	return Target{
 		Service:    service,
 		Env:        env,
 		Context:    environment.Context,
-		Namespace:  namespace,
+		Namespace:  orDefault(override.Namespace, svc.Namespace),
 		Deployment: orDefault(svc.Deployment, service),
-		ConfigMap:  orDefault(svc.ConfigMap, service),
-		Secret:     orDefault(svc.Secret, service),
+		ConfigMap:  orDefault(override.ConfigMap, orDefault(svc.ConfigMap, service)),
+		Secret:     orDefault(override.Secret, orDefault(svc.Secret, service)),
 		Protected:  environment.Protected,
 	}, nil
 }

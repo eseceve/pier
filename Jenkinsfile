@@ -10,7 +10,11 @@
 //   * `jenkinsNotification()` and automatic SCM checkout rely on the org's global
 //     Jenkins shared library / job config (same as ai-funnel-webapp);
 //   * `git push` uses the agent's git credentials for the remote (not GITHUB_TOKEN);
-//   * branch model: `develop` => `beta` prerelease, `main` => stable release.
+//   * branch model: `develop` => `beta` prerelease, `main` => stable release;
+//   * svu v3's `next`/`current` output format (one version per line, nothing on
+//     stdout from `go install`) — release() parses stdout line-by-line and decides
+//     "release warranted" from the stable next vs current, so confirm the exact
+//     pre-release progression on develop against a real svu run.
 pipeline {
   agent any
 
@@ -25,8 +29,9 @@ pipeline {
   }
 
   stages {
+    // Runs on every branch, including main/develop, so a release is never cut
+    // without lint + tests + build passing first (stages run in order).
     stage("Test") {
-      when { not { anyOf { branch "main"; branch "develop" } } }
       steps {
         script {
           go_run("go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest && golangci-lint run")
@@ -70,27 +75,47 @@ def release() {
   sh 'git config --global user.email "jenkins@comparaonline.com"'
   sh 'git config --global user.name "Jenkins"'
 
-  // svu is installed in each container invocation (containers are ephemeral, so a
-  // tool installed in one go_out call is not present in the next).
-  def prerelease = env.BRANCH_NAME == 'develop' ? '--pre-release beta' : ''
-  def next = go_out("go install github.com/caarlos0/svu/v3@latest && svu next ${prerelease}")
-  def current = go_out("go install github.com/caarlos0/svu/v3@latest && svu current")
+  def svuInstall = "go install github.com/caarlos0/svu/v3@latest"
 
-  if (next == current) {
+  // Whether a release is warranted is decided like-for-like: the *stable* next
+  // version vs the current tag. Installing svu once and printing both keeps it to
+  // a single ephemeral container. The beta suffix is orthogonal formatting and
+  // must not enter this comparison, or develop would always look "ahead".
+  def probe = go_out("${svuInstall} && svu current && svu next")
+  def lines = probe.split("\n")
+  def current = lines[0].trim()
+  def nextStable = lines.length > 1 ? lines[1].trim() : current
+
+  if (nextStable == current) {
     echo "No release warranted (svu next == current: ${current})"
     return
   }
+
+  def next = env.BRANCH_NAME == 'develop'
+    ? go_out("${svuInstall} && svu next --pre-release beta")
+    : nextStable
 
   sh "git tag ${next}"
   sh "git push origin ${next}"
 
   // GoReleaser builds the cross-platform binaries and publishes the GitHub Release.
   // GITHUB_TOKEN is forwarded as an env var (never interpolated into the command).
-  sh "docker run --rm -e GITHUB_TOKEN -v ${WORKSPACE}:/app -w /app ${GO_IMAGE} sh -c 'go install github.com/goreleaser/goreleaser/v2@latest && goreleaser release --clean'"
+  // If it fails after the tag is pushed, delete the orphaned tag so the next build
+  // re-computes a release instead of seeing next == current and silently skipping.
+  try {
+    sh "docker run --rm -e GITHUB_TOKEN -v ${WORKSPACE}:/app -w /app ${GO_IMAGE} sh -c 'go install github.com/goreleaser/goreleaser/v2@latest && goreleaser release --clean'"
+  } catch (err) {
+    sh "git push origin :refs/tags/${next} || true"
+    sh "git tag -d ${next} || true"
+    throw err
+  }
 
   if (env.BRANCH_NAME == 'main') {
     sh "git checkout develop || git checkout -b develop origin/develop"
-    sh "git merge --strategy-option=ours origin/main"
+    // Plain merge: a genuine conflict must fail the build for a human to resolve.
+    // -X ours would auto-resolve by discarding main-only changes (e.g. a hotfix),
+    // silently regressing them on the next develop -> main promotion.
+    sh "git merge --no-edit origin/main"
     sh "git push origin develop"
   }
 }

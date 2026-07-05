@@ -52,6 +52,31 @@ func TestResolveDeploymentOverrideAndNamespacePerEnv(t *testing.T) {
 	}
 }
 
+func TestResolveConfigMapAndSecretOverridePerEnv(t *testing.T) {
+	cfg := &Config{
+		DefaultEnv:   "staging",
+		Environments: map[string]Environment{"prod": {Context: "prod-cluster", Protected: true}},
+		Services: map[string]Service{
+			"web": {
+				Namespace: "default",
+				Overrides: map[string]ServiceOverride{
+					"prod": {ConfigMap: "web-prod-cm", Secret: "web-prod-secret"},
+				},
+			},
+		},
+	}
+	got, err := cfg.Resolve("web", "prod")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got.ConfigMap != "web-prod-cm" {
+		t.Fatalf("per-env configmap override not applied: %+v", got)
+	}
+	if got.Secret != "web-prod-secret" {
+		t.Fatalf("per-env secret override not applied: %+v", got)
+	}
+}
+
 func TestResolveUnknownServiceErrors(t *testing.T) {
 	_, err := sampleConfig().Resolve("nope", "staging")
 	if err == nil {

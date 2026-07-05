@@ -78,7 +78,7 @@ func guard(t config.Target, action string) error {
 	if flagDryRun || flagYes || !t.Protected {
 		return nil
 	}
-	return confirm.Prompt(rootCmd.InOrStdin(), os.Stdout, t, action)
+	return confirm.Prompt(rootCmd.InOrStdin(), rootCmd.ErrOrStderr(), t, action)
 }
 
 // joinArgs renders kubectl args for display.
