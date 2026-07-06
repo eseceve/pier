@@ -8,7 +8,10 @@ import (
 var restartCmd = &cobra.Command{
 	Use:   "restart <service>",
 	Short: "Rollout restart of the service's deployment",
-	Args:  cobra.ExactArgs(1),
+	Example: `  pier restart api                 # rollout restart on staging
+  pier restart api -e prod         # prompts for confirmation (or --yes)
+  pier restart api -e prod --dry-run   # print the kubectl command only`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(_ *cobra.Command, args []string) error {
 		target, err := resolve(args[0])
 		if err != nil {
