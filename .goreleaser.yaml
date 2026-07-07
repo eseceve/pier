@@ -37,5 +37,14 @@ changelog:
       - "^docs:"
       - "^test:"
       - "^ci:"
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\(.+\))??!?:.+$'
+      order: 0
+    - title: Bug Fixes
+      regexp: '^.*?fix(\(.+\))??!?:.+$'
+      order: 1
+    - title: Others
+      order: 999
 
 # Homebrew tap automation is deferred to a later version.
