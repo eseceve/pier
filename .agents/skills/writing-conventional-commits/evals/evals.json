@@ -1,0 +1,58 @@
+{
+  "skill_name": "writing-conventional-commits",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "feature-plus-tests-one-commit",
+      "prompt": "commit internal/config/resolve.go and internal/config/resolve_test.go",
+      "expected_output": "The skill proposes exactly 1 commit of type feat(config) containing both the implementation and its test file together, since they are part of the same logical change.",
+      "files": [],
+      "assertions": [
+        "Exactly 1 commit is proposed (not 2)",
+        "The commit type is feat (not test)",
+        "Both resolve.go and resolve_test.go are in the same commit",
+        "The scope is config",
+        "The skill presents the plan and waits for user approval before executing"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "fix-plus-refactor-one-commit",
+      "prompt": "commit, I fixed pier not propagating kubectl's exit code and refactored the exec helper to be cleaner while I was in there",
+      "expected_output": "The skill proposes 1 commit with type fix (not refactor), because fix triggers a release via svu and is the dominant type. The body captures both the exit-code fix and the refactoring rationale.",
+      "files": [],
+      "assertions": [
+        "Exactly 1 commit is proposed",
+        "The commit type is fix (not refactor)",
+        "The commit body references both the exit-code fix and the exec-helper refactor",
+        "The skill does not split this into separate fix and refactor commits"
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "two-unrelated-changes-two-commits",
+      "prompt": "commit internal/kube/exec.go, internal/kube/exec_test.go, and README.md — the exec change adds a --dry-run passthrough and the README just fixes a typo",
+      "expected_output": "The skill proposes exactly 2 commits: one feat(kube) commit with exec.go and exec_test.go, and one docs commit for README.md. They are unrelated logical units.",
+      "files": [],
+      "assertions": [
+        "Exactly 2 commits are proposed",
+        "One commit has scope kube and includes both exec.go and exec_test.go with type feat",
+        "The other commit is type docs for README.md",
+        "The README change is not bundled into the feat commit"
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "blocks-on-protected-branch",
+      "prompt": "commit my changes",
+      "expected_output": "If the current branch is develop or main (pier's protected branches), the skill blocks, suggests a feature branch named <type>/<description>, and waits before committing.",
+      "files": [],
+      "assertions": [
+        "The skill checks the current branch before committing",
+        "If on develop or main, it blocks and does not commit directly",
+        "It suggests a feature branch following the <type>/<short-description> convention",
+        "It waits for the user's decision instead of proceeding automatically"
+      ]
+    }
+  ]
+}
