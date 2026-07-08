@@ -3,8 +3,6 @@ formatter: default
 rules:
   - header-min-length
   - header-max-length
-  - body-max-line-length
-  - footer-max-line-length
   - type-enum
   - scope-enum
 severity:
@@ -16,12 +14,6 @@ settings:
     flags: {}
   header-max-length:
     argument: 72
-    flags: {}
-  body-max-line-length:
-    argument: 100
-    flags: {}
-  footer-max-line-length:
-    argument: 100
     flags: {}
   type-enum:
     argument:
