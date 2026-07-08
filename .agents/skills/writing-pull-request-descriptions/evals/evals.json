@@ -1,0 +1,55 @@
+{
+  "skill_name": "writing-pull-request-descriptions",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "eval-default-template-targets-develop",
+      "prompt": "I'm on branch feat/config-discover and I'm ready to open a PR. Can you create it for me?",
+      "expected_output": "A PR title in conventional commits format and a description using the default template (## Problem, ## Solution, ## How to Test) since pier has no .github/pull_request_template.md. The PR targets develop.",
+      "files": [],
+      "assertions": [
+        "PR title follows conventional commits format: type(scope): description",
+        "PR description contains ## Problem, ## Solution, and ## How to Test sections",
+        "The Solution section explains *why* decisions were made, not just *what* was changed",
+        "The base branch is develop (not main, and not dynamically re-detected)",
+        "The skill does not attempt to read a commitlint.config.js or a .github/pull_request_template.md as required inputs"
+      ]
+    },
+    {
+      "id": 1,
+      "eval_name": "eval-architectural-decision",
+      "prompt": "I replaced the client-go approach with shelling out to kubectl for the exec model. Create a PR for feat/kubectl-shellout.",
+      "expected_output": "A PR with a conventional commits title and a description using the default template. The Solution section should explain why shelling out to kubectl was chosen over client-go, and note the trade-off (inherits the user's kubeconfig/EKS exec auth for free).",
+      "files": [],
+      "assertions": [
+        "PR title follows conventional commits format: type(scope): description",
+        "PR description contains a ## Solution section that explains why shelling out to kubectl was chosen over client-go",
+        "Solution section mentions the trade-off or reasoning (e.g. inheriting existing kubeconfig/EKS auth)",
+        "Base branch is develop"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "eval-no-trigger-pr-question",
+      "prompt": "What should I include in a good pull request description?",
+      "expected_output": "The skill does NOT trigger. Claude answers the question about PR best practices directly without starting the PR creation workflow.",
+      "files": [],
+      "assertions": [
+        "Does not run git branch, git log, or git diff",
+        "Does not attempt to create a PR",
+        "Answers the question about PR description best practices directly"
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "eval-ambiguous-approval",
+      "prompt": "yes",
+      "expected_output": "Ambiguous: 'yes' only triggers the skill if a PR draft was already presented and awaiting confirmation in the current conversation. Without that context, Claude does not start the PR creation workflow.",
+      "files": [],
+      "assertions": [
+        "If there is no prior PR draft in the conversation, the skill does not blindly start a PR workflow",
+        "Claude either asks for clarification or responds to the conversational context"
+      ]
+    }
+  ]
+}
