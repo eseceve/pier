@@ -39,6 +39,12 @@ func Execute() error {
 	return rootCmd.Execute()
 }
 
+// Root returns the root command. It exists so the docs generator can walk the
+// command tree; application code should call Execute instead.
+func Root() *cobra.Command {
+	return rootCmd
+}
+
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&flagEnv, "env", "e", "", "target environment (default: config defaultEnv)")
 	rootCmd.PersistentFlags().BoolVarP(&flagYes, "yes", "y", false, "skip confirmation for mutating ops")

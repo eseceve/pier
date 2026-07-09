@@ -1,9 +1,12 @@
 BINARY := pier
 
-.PHONY: build test lint fmt tidy run clean install-tools
+.PHONY: build test lint fmt tidy run clean install-tools docs
 
 build:
 	go build -o bin/$(BINARY) .
+
+docs:
+	go run ./tools/gendocs
 
 test:
 	go test ./... -race -cover
