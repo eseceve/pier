@@ -2,6 +2,10 @@
 
 Edit the service's ConfigMap in $EDITOR
 
+### Synopsis
+
+Edit the service's ConfigMap in $EDITOR. Interactive-only: requires a TTY and fails fast for non-interactive callers.
+
 ```
 pier config edit <service> [flags]
 ```

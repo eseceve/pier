@@ -2,8 +2,18 @@
 
 Read the service's ConfigMap as YAML
 
+### Synopsis
+
+Read the service's ConfigMap. Output is kubectl's YAML, forwarded verbatim.
+
 ```
 pier config get <service> [flags]
+```
+
+### Examples
+
+```
+  pier config get api
 ```
 
 ### Options

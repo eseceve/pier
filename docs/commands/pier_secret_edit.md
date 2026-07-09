@@ -2,6 +2,10 @@
 
 Edit the service's Secret in $EDITOR
 
+### Synopsis
+
+Edit the service's Secret in $EDITOR. Interactive-only: requires a TTY and fails fast for non-interactive callers.
+
 ```
 pier secret edit <service> [flags]
 ```

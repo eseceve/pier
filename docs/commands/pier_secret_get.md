@@ -2,8 +2,19 @@
 
 Read the service's Secret (use --decode for cleartext)
 
+### Synopsis
+
+Read the service's Secret. Output is kubectl's YAML, forwarded verbatim.
+
 ```
 pier secret get <service> [flags]
+```
+
+### Examples
+
+```
+  pier secret get api              # base64-encoded values
+  pier secret get api --decode     # cleartext values
 ```
 
 ### Options

@@ -6,6 +6,14 @@ Rollout restart of the service's deployment
 pier restart <service> [flags]
 ```
 
+### Examples
+
+```
+  pier restart api                 # rollout restart on staging
+  pier restart api -e prod         # prompts for confirmation (or --yes)
+  pier restart api -e prod --dry-run   # print the kubectl command only
+```
+
 ### Options
 
 ```

@@ -14,18 +14,11 @@ config file — **targeting `staging` by default**. Start with the top-level
 - [Configuration](configuration.md) — config file location, schema, and
   resolution.
 - [Architecture](architecture.md) — the thin-wrapper design and rationale.
+- [Agent & script usage](agents.md) — structured output, `resolve`, and
+  non-interactive safety.
 - [Command reference](commands/) — generated per-command reference.
 - [Design specs](design/) — the rationale behind `pier` and its subsystems.
 - [Implementation plans](plans/) — the phased build plan.
-
-### Coming with later branches
-
-See the
-[documentation-infrastructure design](design/2026-07-07-pier-docs-infra-design.md)
-for the branch mapping:
-
-- **Agent usage** (`agents.md`) — JSON / `discover` modes and parseable output —
-  with `feat/agent-consumable-cli`.
 
 ## Generation convention
 

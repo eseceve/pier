@@ -6,6 +6,13 @@ Show the service's deployment logs
 pier logs <service> [flags]
 ```
 
+### Examples
+
+```
+  pier logs api -f                 # follow logs on staging
+  pier logs api --tail 100 -c app  # last 100 lines from the app container
+```
+
 ### Options
 
 ```
