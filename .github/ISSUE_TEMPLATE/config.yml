@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/eseceve/pier/security/advisories/new
+    about: Please report security issues privately, not as a public issue. See SECURITY.md.
+  - name: Question or discussion
+    url: https://github.com/eseceve/pier/discussions
+    about: Ask usage questions or discuss ideas before filing a feature request.

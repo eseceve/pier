@@ -5,11 +5,12 @@
 
 ## Problem
 
-[What problem does this PR solve? Explain the context and why this change is needed.]
+<!-- What problem does this PR solve? Explain the context and why this change is needed. -->
 
 ## Solution
 
-[Describe the high-level strategy used to solve the problem. Focus on reasoning and architecture decisions, not code details.]
+<!-- Describe the high-level strategy used to solve the problem. Focus on
+     reasoning and architecture decisions, not code details. -->
 
 - Why this approach was chosen
 - Alternatives considered (if relevant)

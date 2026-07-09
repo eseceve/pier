@@ -22,10 +22,10 @@ metadata:
 `pier` is a single Go module (`github.com/comparaonline/pier`) — a small `kubectl`
 wrapper CLI. There is **no** `commitlint.config.js`; linting runs via the Go
 `commitlint` binary against the repo's **`.commitlint.yaml`** (Conventional Commits
-defaults plus a `scope-enum`). There is **no** `.github/pull_request_template.md`,
-so PR descriptions use the default template bundled with this skill. Feature work
-targets **`develop`** (the default branch, release channel `beta`); `main` is the
-stable channel. Types come straight from Conventional Commits.
+defaults plus a `scope-enum`). PR descriptions follow the repo's
+**`.github/PULL_REQUEST_TEMPLATE.md`** (Problem / Solution / How to Test). Feature
+work targets **`develop`** (the default branch, release channel `beta`); `main` is
+the stable channel. Types come straight from Conventional Commits.
 
 ## Workflow
 
@@ -74,9 +74,10 @@ Format: `<type>(<scope>): <description>`
 
 ### Step 3: Write the PR Description
 
-The repo has no `.github/pull_request_template.md`, so use the default template in
-[`template.md`](template.md). (If a template is added under `.github/` later, follow
-its structure exactly instead.)
+Follow the repo's PR template at
+[`.github/PULL_REQUEST_TEMPLATE.md`](../../../.github/PULL_REQUEST_TEMPLATE.md) —
+its structure is the source of truth. GitHub pre-fills new PRs with it, so the
+placeholders are HTML comments; replace them with real prose.
 
 **Problem:** 2-3 sentences on what breaks or is missing. Focus on user/operator
 impact, not implementation details.

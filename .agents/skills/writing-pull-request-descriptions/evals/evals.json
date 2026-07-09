@@ -5,14 +5,14 @@
       "id": 0,
       "eval_name": "eval-default-template-targets-develop",
       "prompt": "I'm on branch feat/config-discover and I'm ready to open a PR. Can you create it for me?",
-      "expected_output": "A PR title in conventional commits format and a description using the default template (## Problem, ## Solution, ## How to Test) since pier has no .github/pull_request_template.md. The PR targets develop.",
+      "expected_output": "A PR title in conventional commits format and a description following the repo's .github/PULL_REQUEST_TEMPLATE.md (## Problem, ## Solution, ## How to Test). The PR targets develop.",
       "files": [],
       "assertions": [
         "PR title follows conventional commits format: type(scope): description",
         "PR description contains ## Problem, ## Solution, and ## How to Test sections",
         "The Solution section explains *why* decisions were made, not just *what* was changed",
         "The base branch is develop (not main, and not dynamically re-detected)",
-        "The skill does not attempt to read a commitlint.config.js or a .github/pull_request_template.md as required inputs"
+        "The description follows the repo's .github/PULL_REQUEST_TEMPLATE.md structure, and the skill does not look for a commitlint.config.js (pier uses .commitlint.yaml)"
       ]
     },
     {

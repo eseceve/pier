@@ -33,6 +33,23 @@ The commit type drives automated versioning:
 - `feat!:` / `fix!:` / `BREAKING CHANGE:` → major release
 - `chore:`, `docs:`, `refactor:`, `test:`, `ci:`, `build:` → no release
 
+## Documentation
+
+Documentation is plain Markdown under [`docs/`](docs/README.md), rendered
+natively on GitHub — no static-site generator and no Node toolchain (a Markdown
+linter would pull in Node and is deliberately avoided). Verify changes by
+reviewing the GitHub-rendered output.
+
+The command reference, man pages, and shell completions are **generated** from
+the cobra command tree, not hand-written:
+
+- **Command reference:** `cobra.GenMarkdownTree` → `docs/commands/`.
+- **Man pages:** `github.com/spf13/cobra/doc.GenManTree`.
+- **Shell completions:** cobra's built-in `completion` command.
+
+The `make docs` / `make man` targets that drive this generation land on the
+branch that carries the command tree (`feat/cli-implementation`).
+
 ## Releases
 
 CI/CD runs on Jenkins and is fully Node-free. Releases are automated from

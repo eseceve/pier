@@ -83,6 +83,14 @@ make install-tools   # golangci-lint, goreleaser, lefthook, svu, commitlint
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and release process.
 
+## Documentation
+
+Full documentation lives in [`docs/`](docs/README.md): [installation](docs/installation.md),
+usage, configuration, and architecture. The command reference, man pages, and
+shell completions are generated from the command tree — see the
+[documentation-infrastructure design](docs/design/2026-07-07-pier-docs-infra-design.md)
+for the generation convention.
+
 ## License
 
 [MIT](LICENSE)
