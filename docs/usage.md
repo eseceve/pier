@@ -121,6 +121,46 @@ is guarded on protected environments and needs an interactive terminal.
 
 See [Configuration](configuration.md) for the file format and resolution rules.
 
+## Bootstrapping the config with `discover`
+
+`pier discover` inspects a cluster with `kubectl` and prints the resource names
+you need to fill in the config, so you don't have to look them up by hand. It is
+**read-only** — it never writes the config file itself (see
+[Configuration → Bootstrapping from the cluster](configuration.md#bootstrapping-from-the-cluster)).
+
+Discovery is scoped by flags and emitted as JSON with `--json`:
+
+| Invocation | Prints |
+|---|---|
+| `pier discover --json` | `{ "contexts": [...] }` — available kubeconfig contexts. |
+| `pier discover --json --context <ctx>` | `{ "namespaces": [...] }` in that context. |
+| `pier discover --json --context <ctx> --namespace <ns>` | `{ "deployments": [...], "configmaps": [...], "secrets": [...] }` in that namespace. |
+
+```console
+$ pier discover --json --context staging-cluster --namespace default
+{
+  "deployments": ["api", "web"],
+  "configmaps": ["api-config", "web-config"],
+  "secrets": ["api", "web-secret"]
+}
+```
+
+`--namespace` requires `--context`. ConfigMap and Secret lists are filtered to
+drop noise (Helm release secrets, service-account tokens, the `kube-root-ca.crt`
+ConfigMap, Istio CA certs); deployments are returned as-is.
+
+Without `--json`, `pier discover` currently prints a pointer to the JSON mode and
+the `pier-config` skill — interactive discovery is planned for a later version.
+
+### The `pier-config` skill
+
+Building the whole config by hand from raw JSON is tedious, so the repo-local
+**`pier-config`** skill drives it conversationally: it runs `pier discover --json`
+across contexts and namespaces, matches each deployment to its ConfigMap/Secret
+by name, correlates per-environment differences into `overrides`, and writes the
+finished `config.yaml`. Ask it to "build my pier config" / "bootstrap pier from
+the cluster".
+
 ## Safety
 
 Mutating operations (`restart`, `config edit`, `secret edit`) against an
