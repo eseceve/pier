@@ -15,6 +15,7 @@ kubectl wrapper mapping service names to their k8s context/namespace
 ### SEE ALSO
 
 * [pier config](pier_config.md)	 - Read, edit, locate or create the config / a service's ConfigMap
+* [pier discover](pier_discover.md)	 - Discover cluster resources to help build the config
 * [pier logs](pier_logs.md)	 - Show the service's deployment logs
 * [pier restart](pier_restart.md)	 - Rollout restart of the service's deployment
 * [pier secret](pier_secret.md)	 - Read or edit a service's Secret

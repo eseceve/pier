@@ -55,11 +55,31 @@ services:
         namespace: web-prod
 ```
 
+## Generating the config
+
+Build the config from a live cluster instead of writing it by hand.
+
+Raw discovery data (drill down contexts → namespaces → resources):
+
+```console
+pier discover --json                                  # list contexts
+pier discover --json --context <ctx>                  # list namespaces
+pier discover --json --context <ctx> --namespace <ns> # deployments, configmaps, secrets
+```
+
+Or, in Claude Code, use the **pier-config** skill (shipped in
+`.claude/skills/pier-config/`) to build the config conversationally — it drives
+`pier discover` and writes the config for you.
+
+> An interactive `pier discover` wizard (no Claude required) is planned for a
+> later version.
+
 ## Commands
 
 | Command | Description |
 |---|---|
 | `pier restart <svc>` | Rollout restart of the service's deployment |
+| `pier discover` | Inspect the cluster to help build the config (`--json`) |
 | `pier status <svc>` | Pods + rollout status |
 | `pier logs <svc>` | Logs (`-f`, `--tail`, `-c`) |
 | `pier config get\|edit <svc>` | Read / edit the service's ConfigMap |

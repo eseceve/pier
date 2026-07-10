@@ -17,6 +17,7 @@ Start at [`pier.md`](pier.md); each page links to its subcommands under
 - [`pier config`](pier_config.md) — [`get`](pier_config_get.md) · [`edit`](pier_config_edit.md) · [`init`](pier_config_init.md) · [`path`](pier_config_path.md)
 - [`pier secret`](pier_secret.md) — [`get`](pier_secret_get.md) · [`edit`](pier_secret_edit.md)
 - [`pier services`](pier_services.md)
+- [`pier discover`](pier_discover.md)
 
 ## Man pages and completions
 

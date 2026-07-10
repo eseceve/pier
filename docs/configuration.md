@@ -88,3 +88,29 @@ You can see the resolved target for any command without running it:
 $ pier status web -e prod --dry-run
 kubectl --context prod-cluster --namespace web-prod get deployment/web-server
 ```
+
+## Bootstrapping from the cluster
+
+You don't have to write the config from scratch. `pier discover` reads a cluster
+with `kubectl` and reports the names you'd otherwise look up by hand — contexts,
+namespaces, deployments, ConfigMaps, and Secrets (see
+[Usage → discover](usage.md#bootstrapping-the-config-with-discover) for the
+flags and JSON shape). It is **read-only**: it prints data, it never writes
+`config.yaml`.
+
+How the discovered names map onto the schema above:
+
+- **`contexts`** → the `context` of each `environments` entry.
+- **`namespaces`** → a service's `namespace` (or an env `overrides.<env>.namespace`).
+- **`deployments`** → the services themselves; each deployment name becomes a
+  service (and its `deployment` field when it differs from the service name).
+- **`configmaps` / `secrets`** → matched to a service by name: an exact match on
+  the service name wins, otherwise a single `"<service>-"`-prefixed candidate is
+  used; anything ambiguous is left for you to set explicitly.
+
+When the same service resolves differently across environments (e.g. a different
+namespace or Secret on prod), those differences go under `overrides.<env>`.
+
+The **`pier-config`** skill automates this end to end — running discovery across
+your contexts and namespaces, proposing the service mapping, and writing the
+finished file. Ask it to "build my pier config".

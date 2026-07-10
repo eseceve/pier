@@ -24,8 +24,6 @@ See the
 [documentation-infrastructure design](design/2026-07-07-pier-docs-infra-design.md)
 for the branch mapping:
 
-- `discover` sections in [Usage](usage.md) and [Configuration](configuration.md)
-  — with `feat/config-discover`.
 - **Agent usage** (`agents.md`) — JSON / `discover` modes and parseable output —
   with `feat/agent-consumable-cli`.
 
