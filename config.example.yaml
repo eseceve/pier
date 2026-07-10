@@ -1,0 +1,18 @@
+defaultEnv: staging
+
+environments:
+  staging:
+    context: staging-cluster
+  prod:
+    context: prod-cluster
+    protected: true
+
+services:
+  api:
+    namespace: default
+  web:
+    namespace: default
+    deployment: web-server
+    overrides:
+      prod:
+        namespace: web-prod
