@@ -10,7 +10,10 @@ var secretDecode bool
 var secretGetCmd = &cobra.Command{
 	Use:   "get <service>",
 	Short: "Read the service's Secret (use --decode for cleartext)",
-	Args:  cobra.ExactArgs(1),
+	Long:  "Read the service's Secret. Output is kubectl's YAML, forwarded verbatim.",
+	Example: `  pier secret get api              # base64-encoded values
+  pier secret get api --decode     # cleartext values`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(_ *cobra.Command, args []string) error {
 		target, err := resolve(args[0])
 		if err != nil {

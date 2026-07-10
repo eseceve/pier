@@ -8,17 +8,14 @@ import (
 var secretEditCmd = &cobra.Command{
 	Use:   "edit <service>",
 	Short: "Edit the service's Secret in $EDITOR",
+	Long:  "Edit the service's Secret in $EDITOR. Interactive-only: requires a TTY and fails fast for non-interactive callers.",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(_ *cobra.Command, args []string) error {
 		target, err := resolve(args[0])
 		if err != nil {
 			return err
 		}
-		kubectlArgs := kube.SecretEditArgs(target)
-		if err := guard(target, kubectlCmd(kubectlArgs)); err != nil {
-			return err
-		}
-		return run(kubectlArgs)
+		return runInteractive(target, kube.SecretEditArgs(target), "secret edit")
 	},
 }
 

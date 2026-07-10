@@ -14,7 +14,9 @@ var (
 var logsCmd = &cobra.Command{
 	Use:   "logs <service>",
 	Short: "Show the service's deployment logs",
-	Args:  cobra.ExactArgs(1),
+	Example: `  pier logs api -f                 # follow logs on staging
+  pier logs api --tail 100 -c app  # last 100 lines from the app container`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(_ *cobra.Command, args []string) error {
 		target, err := resolve(args[0])
 		if err != nil {

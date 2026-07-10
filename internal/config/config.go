@@ -44,14 +44,14 @@ type Config struct {
 
 // Target is a fully resolved command destination.
 type Target struct {
-	Service    string
-	Env        string
-	Context    string
-	Namespace  string
-	Deployment string
-	ConfigMap  string
-	Secret     string
-	Protected  bool
+	Service    string `json:"service" yaml:"service"`
+	Env        string `json:"env" yaml:"env"`
+	Context    string `json:"context" yaml:"context"`
+	Namespace  string `json:"namespace" yaml:"namespace"`
+	Deployment string `json:"deployment" yaml:"deployment"`
+	ConfigMap  string `json:"configmap" yaml:"configmap"`
+	Secret     string `json:"secret" yaml:"secret"`
+	Protected  bool   `json:"protected" yaml:"protected"`
 }
 
 // ServiceNames returns the configured service names, sorted.

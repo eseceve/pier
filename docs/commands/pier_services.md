@@ -9,7 +9,8 @@ pier services [flags]
 ### Options
 
 ```
-  -h, --help   help for services
+  -h, --help            help for services
+  -o, --output string   structured output format: json or yaml
 ```
 
 ### Options inherited from parent commands

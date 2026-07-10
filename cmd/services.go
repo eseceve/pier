@@ -1,11 +1,15 @@
 package cmd
 
 import (
-	"fmt"
-	"text/tabwriter"
-
 	"github.com/spf13/cobra"
 )
+
+// serviceRow is the structured shape of one configured service.
+type serviceRow struct {
+	Name       string `json:"name" yaml:"name"`
+	Namespace  string `json:"namespace" yaml:"namespace"`
+	Deployment string `json:"deployment" yaml:"deployment"`
+}
 
 var servicesCmd = &cobra.Command{
 	Use:   "services",
@@ -16,24 +20,31 @@ var servicesCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 2, ' ', 0)
-		if _, err := fmt.Fprintln(w, "SERVICE\tNAMESPACE\tDEPLOYMENT"); err != nil {
-			return err
-		}
+
+		rows := make([]serviceRow, 0, len(cfg.Services))
 		for _, name := range cfg.ServiceNames() {
 			svc := cfg.Services[name]
 			deployment := svc.Deployment
 			if deployment == "" {
 				deployment = name
 			}
-			if _, err := fmt.Fprintf(w, "%s\t%s\t%s\n", name, svc.Namespace, deployment); err != nil {
-				return err
-			}
+			rows = append(rows, serviceRow{Name: name, Namespace: svc.Namespace, Deployment: deployment})
 		}
-		return w.Flush()
+
+		if flagOutput != "" {
+			return encodeOutput(cmd.OutOrStdout(), flagOutput, rows)
+		}
+
+		table := make([][]string, 0, len(rows)+1)
+		table = append(table, []string{"SERVICE", "NAMESPACE", "DEPLOYMENT"})
+		for _, r := range rows {
+			table = append(table, []string{r.Name, r.Namespace, r.Deployment})
+		}
+		return renderTable(cmd.OutOrStdout(), table)
 	},
 }
 
 func init() {
+	addOutputFlag(servicesCmd)
 	rootCmd.AddCommand(servicesCmd)
 }

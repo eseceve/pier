@@ -79,16 +79,33 @@ Or, in Claude Code, use the **pier-config** skill (shipped in
 | Command | Description |
 |---|---|
 | `pier restart <svc>` | Rollout restart of the service's deployment |
+| `pier resolve <svc>` | Print the resolved k8s coordinates (`-o json\|yaml`) |
 | `pier discover` | Inspect the cluster to help build the config (`--json`) |
 | `pier status <svc>` | Pods + rollout status |
 | `pier logs <svc>` | Logs (`-f`, `--tail`, `-c`) |
 | `pier config get\|edit <svc>` | Read / edit the service's ConfigMap |
 | `pier secret get\|edit <svc>` | Read / edit the service's Secret (`--decode`) |
-| `pier services` | List configured services |
+| `pier services` | List configured services (`-o json\|yaml`) |
 | `pier config init\|path` | Create / locate the config file |
 
 Global flags: `-e/--env` (default `staging`), `-y/--yes`, `--dry-run`,
 `-v/--verbose`.
+
+## Scripting & agents
+
+`pier` is safe to drive from scripts and LLM agents:
+
+- **`pier resolve <svc> -o json`** reports a service's resolved coordinates with
+  no side effects — pair it with `--dry-run` to preview the exact `kubectl`.
+- **`services` and `resolve`** accept `-o json|yaml`. Pass-through commands
+  (`logs`, `status`, `config get`, `secret get`) forward kubectl's output, so
+  use kubectl's own `-o` for structured resource data.
+- **Structured output goes to stdout**; diagnostics and prompts go to stderr.
+- **Mutating ops on a protected env** require a TTY or an explicit `--yes` —
+  non-interactive callers fail fast instead of hanging. `config edit` /
+  `secret edit` are interactive-only.
+
+See [`docs/adr/ADR-0001`](docs/adr/ADR-0001-agent-consumable-cli.md) for the rationale.
 
 ## Development
 
