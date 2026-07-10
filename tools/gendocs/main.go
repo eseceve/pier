@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/comparaonline/pier/cmd"
+	"github.com/eseceve/pier/cmd"
 	"github.com/spf13/cobra/doc"
 )
 

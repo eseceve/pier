@@ -19,7 +19,7 @@ metadata:
 
 ## About this repo
 
-`pier` is a single Go module (`github.com/comparaonline/pier`) — a small `kubectl`
+`pier` is a single Go module (`github.com/eseceve/pier`) — a small `kubectl`
 wrapper CLI. There is **no** `commitlint.config.js`; linting runs via the Go
 `commitlint` binary against the repo's **`.commitlint.yaml`** (Conventional Commits
 defaults plus a `scope-enum`). PR descriptions follow the repo's

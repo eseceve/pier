@@ -7,7 +7,7 @@ out to it.
 ## Go
 
 ```console
-go install github.com/comparaonline/pier@latest
+go install github.com/eseceve/pier@latest
 ```
 
 Requires Go 1.26+. This installs `pier` into `$(go env GOPATH)/bin`; make sure

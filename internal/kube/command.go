@@ -4,7 +4,7 @@ package kube
 import (
 	"strconv"
 
-	"github.com/comparaonline/pier/internal/config"
+	"github.com/eseceve/pier/internal/config"
 )
 
 func base(t config.Target, args ...string) []string {

@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/comparaonline/pier/internal/config"
+	"github.com/eseceve/pier/internal/config"
 	"github.com/spf13/cobra"
 )
 

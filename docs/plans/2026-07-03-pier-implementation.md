@@ -448,7 +448,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/comparaonline/pier/internal/config"
+	"github.com/eseceve/pier/internal/config"
 )
 
 func target() config.Target {
@@ -517,7 +517,7 @@ package kube
 import (
 	"strconv"
 
-	"github.com/comparaonline/pier/internal/config"
+	"github.com/eseceve/pier/internal/config"
 )
 
 func base(t config.Target, args ...string) []string {
@@ -665,7 +665,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/comparaonline/pier/internal/config"
+	"github.com/eseceve/pier/internal/config"
 )
 
 func protectedTarget() config.Target {
@@ -715,7 +715,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/comparaonline/pier/internal/config"
+	"github.com/eseceve/pier/internal/config"
 )
 
 // Prompt shows the environment, resolved coordinates and the exact action, then
@@ -765,9 +765,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/comparaonline/pier/internal/confirm"
-	"github.com/comparaonline/pier/internal/config"
-	"github.com/comparaonline/pier/internal/kube"
+	"github.com/eseceve/pier/internal/confirm"
+	"github.com/eseceve/pier/internal/config"
+	"github.com/eseceve/pier/internal/kube"
 	"github.com/spf13/cobra"
 )
 
@@ -858,7 +858,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/comparaonline/pier/cmd"
+	"github.com/eseceve/pier/cmd"
 )
 
 // Injected at build time via -ldflags.
@@ -996,7 +996,7 @@ Replace the entire contents of `cmd/restart.go` with:
 package cmd
 
 import (
-	"github.com/comparaonline/pier/internal/kube"
+	"github.com/eseceve/pier/internal/kube"
 	"github.com/spf13/cobra"
 )
 
@@ -1174,7 +1174,7 @@ Replace the entire contents of `cmd/status.go` with:
 package cmd
 
 import (
-	"github.com/comparaonline/pier/internal/kube"
+	"github.com/eseceve/pier/internal/kube"
 	"github.com/spf13/cobra"
 )
 
@@ -1206,7 +1206,7 @@ Replace the entire contents of `cmd/logs.go` with:
 package cmd
 
 import (
-	"github.com/comparaonline/pier/internal/kube"
+	"github.com/eseceve/pier/internal/kube"
 	"github.com/spf13/cobra"
 )
 
@@ -1355,7 +1355,7 @@ Replace the entire contents of `cmd/config_get.go` with:
 package cmd
 
 import (
-	"github.com/comparaonline/pier/internal/kube"
+	"github.com/eseceve/pier/internal/kube"
 	"github.com/spf13/cobra"
 )
 
@@ -1382,7 +1382,7 @@ Replace the entire contents of `cmd/config_edit.go` with:
 package cmd
 
 import (
-	"github.com/comparaonline/pier/internal/kube"
+	"github.com/eseceve/pier/internal/kube"
 	"github.com/spf13/cobra"
 )
 
@@ -1417,7 +1417,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/comparaonline/pier/internal/config"
+	"github.com/eseceve/pier/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -1445,7 +1445,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/comparaonline/pier/internal/config"
+	"github.com/eseceve/pier/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -1606,7 +1606,7 @@ Replace the entire contents of `cmd/secret_get.go` with:
 package cmd
 
 import (
-	"github.com/comparaonline/pier/internal/kube"
+	"github.com/eseceve/pier/internal/kube"
 	"github.com/spf13/cobra"
 )
 
@@ -1636,7 +1636,7 @@ Replace the entire contents of `cmd/secret_edit.go` with:
 package cmd
 
 import (
-	"github.com/comparaonline/pier/internal/kube"
+	"github.com/eseceve/pier/internal/kube"
 	"github.com/spf13/cobra"
 )
 

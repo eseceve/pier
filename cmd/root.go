@@ -9,9 +9,9 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/comparaonline/pier/internal/config"
-	"github.com/comparaonline/pier/internal/confirm"
-	"github.com/comparaonline/pier/internal/kube"
+	"github.com/eseceve/pier/internal/config"
+	"github.com/eseceve/pier/internal/confirm"
+	"github.com/eseceve/pier/internal/kube"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )

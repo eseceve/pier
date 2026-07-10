@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/comparaonline/pier/cmd"
+	"github.com/eseceve/pier/cmd"
 )
 
 // Injected at build time via -ldflags.

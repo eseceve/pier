@@ -1,6 +1,6 @@
 # pier — agent guide
 
-`pier` is a small `kubectl` wrapper CLI (Go module `github.com/comparaonline/pier`).
+`pier` is a small `kubectl` wrapper CLI (Go module `github.com/eseceve/pier`).
 It maps a friendly service name to its Kubernetes coordinates (context +
 namespace, plus optional resource names) via a config file, so common operations
 become short and memorable — **targeting `staging` by default**.
