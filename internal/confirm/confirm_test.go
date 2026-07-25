@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/comparaonline/pier/internal/config"
+	"github.com/eseceve/pier/internal/config"
 )
 
 func protectedTarget() config.Target {

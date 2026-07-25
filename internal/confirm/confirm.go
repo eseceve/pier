@@ -9,7 +9,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/comparaonline/pier/internal/config"
+	"github.com/eseceve/pier/internal/config"
 )
 
 // Prompt shows the environment, resolved coordinates and the exact action, then

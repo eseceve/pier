@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/comparaonline/pier/internal/kube"
+	"github.com/eseceve/pier/internal/kube"
 	"github.com/spf13/cobra"
 )
 

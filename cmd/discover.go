@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/comparaonline/pier/internal/discover"
+	"github.com/eseceve/pier/internal/discover"
 	"github.com/spf13/cobra"
 )
 

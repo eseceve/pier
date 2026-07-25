@@ -181,7 +181,7 @@ pier/
 
 ## Repository, DX & CI/CD
 
-Module path: `github.com/comparaonline/pier`. Go 1.26. License: MIT.
+Module path: `github.com/eseceve/pier`. Go 1.26. License: MIT.
 
 ### App skeleton generation
 
@@ -271,8 +271,8 @@ format.
 
 ### Distribution
 
-- Public GitHub repo `github.com/comparaonline/pier`.
-- `go install github.com/comparaonline/pier@latest`.
+- Public GitHub repo `github.com/eseceve/pier`.
+- `go install github.com/eseceve/pier@latest`.
 - Prebuilt binaries on the GitHub Releases page.
 - Homebrew tap: **deferred to a later version**.
 

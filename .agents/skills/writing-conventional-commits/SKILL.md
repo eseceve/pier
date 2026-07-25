@@ -24,7 +24,7 @@ metadata:
 
 ## About this repo
 
-`pier` is a single Go module (`github.com/comparaonline/pier`) — a small `kubectl`
+`pier` is a single Go module (`github.com/eseceve/pier`) — a small `kubectl`
 wrapper CLI. There is no Node.js or Python tooling: commit-message linting runs
 through the **Go** `commitlint` binary, wired via lefthook (`lefthook.yml`), not
 through `@commitlint/cli`. The repo ships a **`.commitlint.yaml`** at the root: it

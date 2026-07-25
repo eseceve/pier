@@ -21,10 +21,10 @@ how each service is "docked" at a known context/namespace.
 Go:
 
 ```console
-go install github.com/comparaonline/pier@latest
+go install github.com/eseceve/pier@latest
 ```
 
-Or download a binary from the [releases page](https://github.com/comparaonline/pier/releases).
+Or download a binary from the [releases page](https://github.com/eseceve/pier/releases).
 
 > A Homebrew tap is planned for a later version.
 

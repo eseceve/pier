@@ -4,7 +4,7 @@
 // relying on it:
 //   * the agent can run Docker and pull the `golang:1.26` image (which bundles git);
 //   * the `GitHubJenkinsAccessToken` credential exists and can push tags and create
-//     releases on comparaonline/pier;
+//     releases on eseceve/pier;
 //   * git operations inside the container may need `safe.directory` on the mounted
 //     workspace depending on uid mapping;
 //   * `jenkinsNotification()` and automatic SCM checkout rely on the org's global

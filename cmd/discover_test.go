@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/comparaonline/pier/internal/discover"
+	"github.com/eseceve/pier/internal/discover"
 )
 
 // fakeCmdRunner returns canned kubectl output keyed by joined args.
