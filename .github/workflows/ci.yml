@@ -52,23 +52,25 @@ jobs:
       - name: Install svu
         run: go install github.com/caarlos0/svu/v3@latest
 
-      # Whether a release is warranted is decided like-for-like: the *stable* next
-      # version vs the current tag. The beta suffix is orthogonal formatting and
-      # must not enter this comparison, or develop would always look "ahead".
+      # Compute the branch-appropriate next tag (develop => beta prerelease, main =>
+      # stable) and release only if that exact tag doesn't exist yet. A string compare
+      # of `svu next` vs `svu current` can't decide this: on develop the current tag is
+      # a beta (e.g. v0.1.0-beta) while `svu next` is the stable target (v0.1.0), so they
+      # always differ and every develop push would look "ahead". The tag-existence check
+      # is also idempotent — a re-run or the back-merge push never re-cuts an existing
+      # release. (All tags are present locally via the fetch-tags checkout above.)
       - name: Compute version
         id: version
         run: |
-          current="$(svu current)"
-          next_stable="$(svu next)"
-          if [ "$next_stable" = "$current" ]; then
-            echo "No release warranted (svu next == current: $current)"
+          if [ "$GITHUB_REF" = "refs/heads/develop" ]; then
+            next="$(svu next --prerelease beta)"
+          else
+            next="$(svu next)"
+          fi
+          if git rev-parse -q --verify "refs/tags/$next" >/dev/null; then
+            echo "No release warranted (tag $next already exists)"
             echo "release=false" >> "$GITHUB_OUTPUT"
             exit 0
-          fi
-          if [ "$GITHUB_REF" = "refs/heads/develop" ]; then
-            next="$(svu next --pre-release beta)"
-          else
-            next="$next_stable"
           fi
           echo "release=true" >> "$GITHUB_OUTPUT"
           echo "next=$next" >> "$GITHUB_OUTPUT"
