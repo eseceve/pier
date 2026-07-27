@@ -47,4 +47,10 @@ changelog:
     - title: Others
       order: 999
 
+release:
+  # develop cuts -beta / -rc tags, main cuts clean tags. `auto` marks the GitHub
+  # Release as a prerelease iff the tag has a semver prerelease segment, so betas
+  # never become the repo's "Latest" release.
+  prerelease: auto
+
 # Homebrew tap automation is deferred to a later version.
