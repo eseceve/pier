@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+# Read-only by default; the release job elevates to contents: write.
+permissions:
+  contents: read
+
+# Serialize runs on the same ref: the back-merge push re-triggers ci.yml on
+# develop, and that run must not overlap another develop release. Releases must
+# not be cancelled mid-flight.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Lint
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
+        with:
+          version: latest
+      - name: Test
+        run: go test ./... -race
+      - name: Build
+        run: go build ./...
+
+  release:
+    needs: test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # svu reads the full commit history and all tags to compute the next version.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Install svu
+        run: go install github.com/caarlos0/svu/v3@latest
+
+      # Compute the branch-appropriate next tag (develop => beta prerelease, main =>
+      # stable) and release only if that exact tag doesn't exist yet. A string compare
+      # of `svu next` vs `svu current` can't decide this: on develop the current tag is
+      # a beta (e.g. v0.1.0-beta) while `svu next` is the stable target (v0.1.0), so they
+      # always differ and every develop push would look "ahead". The tag-existence check
+      # is also idempotent — a re-run or the back-merge push never re-cuts an existing
+      # release. (All tags are present locally via the fetch-tags checkout above.)
+      - name: Compute version
+        id: version
+        run: |
+          if [ "$GITHUB_REF" = "refs/heads/develop" ]; then
+            next="$(svu next --prerelease beta)"
+          else
+            next="$(svu next)"
+          fi
+          if git rev-parse -q --verify "refs/tags/$next" >/dev/null; then
+            echo "No release warranted (tag $next already exists)"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "release=true" >> "$GITHUB_OUTPUT"
+          echo "next=$next" >> "$GITHUB_OUTPUT"
+
+      - name: Create and push tag
+        id: tag
+        if: steps.version.outputs.release == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "${{ steps.version.outputs.next }}"
+          git push origin "${{ steps.version.outputs.next }}"
+
+      - name: Run GoReleaser
+        id: goreleaser
+        if: steps.version.outputs.release == 'true'
+        uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
+        with:
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # If GoReleaser fails after the tag was pushed, delete the orphaned tag so the
+      # next run recomputes a release instead of seeing next == current and skipping.
+      # Scoped to GoReleaser's own failure (not job-level failure()) so a later
+      # back-merge conflict never deletes the tag of an already-published release.
+      - name: Delete orphaned tag on failure
+        if: failure() && steps.goreleaser.outcome == 'failure'
+        run: |
+          git push origin ":refs/tags/${{ steps.version.outputs.next }}" || true
+          git tag -d "${{ steps.version.outputs.next }}" || true
+
+      # develop is protected and GITHUB_TOKEN cannot push to it. Mint a short-lived,
+      # repo-scoped GitHub App token used only for the back-merge push below.
+      - name: Mint app token for back-merge
+        id: app-token
+        if: steps.version.outputs.release == 'true' && github.ref == 'refs/heads/main'
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      # Plain merge: a genuine conflict must fail the run for a human to resolve.
+      # -X ours would auto-resolve by discarding main-only changes (e.g. a hotfix),
+      # silently regressing them on the next develop -> main promotion.
+      - name: Back-merge main into develop
+        if: steps.version.outputs.release == 'true' && github.ref == 'refs/heads/main'
+        env:
+          # Keep the token out of the command line (process table / logs); reference
+          # it as a shell variable inside the push URL instead.
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          git fetch origin develop
+          git checkout develop || git checkout -b develop origin/develop
+          git merge --no-edit origin/main
+          git push "https://x-access-token:${APP_TOKEN}@github.com/${{ github.repository }}.git" develop

@@ -52,12 +52,12 @@ branch that carries the command tree (`feat/cli-implementation`).
 
 ## Releases
 
-CI/CD runs on Jenkins and is fully Node-free. Releases are automated from
-Conventional Commits:
+CI/CD runs on GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
+and is fully Node-free. Releases are automated from Conventional Commits:
 
-1. On `develop` (channel `beta`) and `main` (stable), Jenkins computes the next
-   version with [`svu`](https://github.com/caarlos0/svu) and creates + pushes the
-   git tag.
+1. On `develop` (channel `beta`) and `main` (stable), the workflow computes the
+   next version with [`svu`](https://github.com/caarlos0/svu) and creates + pushes
+   the git tag.
 2. [GoReleaser](https://goreleaser.com/) cross-compiles the binaries and
    publishes the GitHub Release (with notes from the commit history).
 

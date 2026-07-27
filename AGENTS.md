@@ -64,8 +64,8 @@ test suite (pre-push). Never bypass with `--no-verify`.
 
 ## Commits & releases
 
-Conventional Commits drive automated versioning via `svu` on Jenkins (Node-free
-CI/CD; releases published by GoReleaser). Commit type → release effect:
+Conventional Commits drive automated versioning via `svu` on GitHub Actions
+(Node-free CI/CD; releases published by GoReleaser). Commit type → release effect:
 
 | Type | Effect |
 |---|---|

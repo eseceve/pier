@@ -34,7 +34,7 @@ keeps the Conventional Commits defaults (types, 72-char header) and adds a
 `allow-empty: true`, so a scopeless message is still valid. A curated scope list
 keeps the GoReleaser changelog consistent (see `.goreleaser.yaml` groups).
 
-Commit types drive automated versioning via `svu` in Jenkins (see `CONTRIBUTING.md`):
+Commit types drive automated versioning via `svu` on GitHub Actions (see `CONTRIBUTING.md`):
 
 | Type | Release effect |
 |---|---|
@@ -148,7 +148,7 @@ hook. To map a change to one:
    meaningful segment (`internal/config/resolve.go` → `config`;
    `internal/kube/exec.go` → `kube`).
 3. **Cross-cutting / tooling** — changes with no domain scope (`*.md`, `.github/`,
-   `.goreleaser.yaml`, `lefthook.yml`, `Jenkinsfile`, `Makefile`, `go.mod`) go
+   `.goreleaser.yaml`, `lefthook.yml`, `Makefile`, `go.mod`) go
    **scopeless**, carried by the type alone (`docs:`, `ci:`, `build:`, `chore:`).
 4. **Fallback** — omit the scope if nothing in the enum fits; `allow-empty: true`
    keeps a scopeless message valid.

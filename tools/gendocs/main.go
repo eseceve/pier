@@ -18,7 +18,7 @@ func main() {
 	// generated files don't churn on every run.
 	root.DisableAutoGenTag = true
 
-	if err := os.MkdirAll(outDir, 0o755); err != nil {
+	if err := os.MkdirAll(outDir, 0o750); err != nil {
 		log.Fatalf("gendocs: %v", err)
 	}
 	if err := doc.GenMarkdownTree(root, outDir); err != nil {

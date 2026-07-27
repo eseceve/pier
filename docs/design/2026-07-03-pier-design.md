@@ -215,35 +215,34 @@ and `internal/kube` packages are hand-written.
 - **lefthook** (`lefthook.yml`): `commit-msg` runs **commitlint**; `pre-commit`
   runs `gofmt` + `golangci-lint`; `pre-push` runs the test suite.
 
-### CI/CD (Jenkins)
+### CI/CD (GitHub Actions)
 
-CI/CD runs on the company's **Jenkins** (a `Jenkinsfile` at the repo root),
-following the Comparaonline convention (reference: `ai-funnel-webapp`) but
-**fully Node-free** — the whole toolchain is Go. Branch model:
+CI/CD runs on **GitHub Actions** (`.github/workflows/ci.yml`), **fully Node-free**
+— the whole toolchain is Go. The pipeline was migrated from an org Jenkins draft;
+see `docs/design/2026-07-10-jenkins-to-github-actions-design.md` for the rationale.
+Branch model:
 
 - `develop` → prerelease channel `beta` (GitHub prereleases).
 - `main` → stable release (`latest`).
 
-Stages, adapted for a CLI — there is **no Helm/k8s deploy** (this repo ships
-binaries, not a deployed container). Everything runs in a single `golang:1.26`
-container (plus `git`):
+Jobs, adapted for a CLI — there is **no Helm/k8s deploy** (this repo ships
+binaries, not a deployed container). The runner is `ubuntu-latest` with
+`actions/setup-go` (Go version pinned to `go.mod`):
 
-1. **Test** (non-release commits): `golangci-lint run`, `go test ./... -race`,
-   `go build ./...`.
-2. **Release** (`develop`/`main`): compute the next version with
-   [`svu`](https://github.com/caarlos0/svu) from Conventional Commits; if it
-   differs from the current tag, create + push the tag.
+1. **Test** (every push/PR to `develop`/`main`): `golangci-lint run`,
+   `go test ./... -race`, `go build ./...`.
+2. **Release** (`needs: test`, pushes to `develop`/`main`): compute the next
+   version with [`svu`](https://github.com/caarlos0/svu) from Conventional
+   Commits; if it differs from the current tag, create + push the tag.
 3. **Publish binaries**: [GoReleaser](https://goreleaser.com/) cross-compiles
    (linux/darwin × amd64/arm64) and creates the GitHub Release with notes +
    binaries.
 
-Backmerge `main` → `develop` is a plain `git` step in the pipeline (no plugin).
-Homebrew tap automation is deferred to a later version.
-
-> The `Jenkinsfile` is authored in the implementation phase and verified against
-> the real Jenkins setup. Infra requirements to confirm: an agent with Go +
-> GoReleaser + svu + git; the `GitHubJenkinsAccessToken` credential (exported as
-> `GITHUB_TOKEN` for GoReleaser).
+Backmerge `main` → `develop` is a plain `git merge` step in the release job. The
+per-run `GITHUB_TOKEN` handles tags and releases; the back-merge push to the
+protected `develop` branch uses a short-lived GitHub App installation token — no
+long-lived PAT. All third-party actions are pinned to a commit SHA. Homebrew tap
+automation is deferred to a later version.
 
 ### Versioning & releases (svu + GoReleaser, Node-free)
 
@@ -278,7 +277,7 @@ format.
 
 ### Dependency updates & hygiene
 
-- **Dependabot** (`dependabot.yml`): weekly `gomod` updates (an addition beyond
-  the company convention; CI itself is Jenkins, not GitHub Actions).
+- **Dependabot** (`dependabot.yml`): weekly `gomod` updates, plus `github-actions`
+  updates for the workflow's pinned action SHAs.
 - The committed `config.example.yaml` and README use generic placeholders
   (`staging-cluster`, `prod-cluster`) — never real internal EKS context names.
